@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-and-lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -e ".[dev]"
+
+      - name: Lint and format check with ruff
+        run: |
+          ruff check src/ tests/
+
+      - name: Run pytest test suite
+        run: |
+          pytest tests/ -v --cov=src --cov-report=xml
+
+      - name: Validate Mermaid diagrams in README
+        run: |
+          npm install -g @mermaid-js/mermaid-cli
+          python -c "
+          import re, subprocess, sys
+          with open('README.md', 'r', encoding='utf-8') as f:
+              content = f.read()
+          diagrams = re.findall(r'```mermaid\n(.*?)\n```', content, re.DOTALL)
+          print(f'Found {len(diagrams)} Mermaid diagram(s) in README.md')
+          for idx, dia in enumerate(diagrams, 1):
+              with open(f'diag_{idx}.mmd', 'w', encoding='utf-8') as out:
+                  out.write(dia)
+              res = subprocess.run(['mmdc', '-i', f'diag_{idx}.mmd', '-o', f'diag_{idx}.svg'], capture_output=True, text=True)
+              if res.returncode != 0:
+                  print(f'Mermaid validation error in diagram {idx}: {res.stderr}')
+                  sys.exit(1)
+              print(f'Diagram {idx} validated successfully.')
+          "

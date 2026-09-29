@@ -1,0 +1,54 @@
+# ==============================================================================
+# Pipeline Configuration: AI-Driven Drug Discovery Pipeline
+# ==============================================================================
+
+pipeline:
+  name: "ai-drug-discovery-core"
+  version: "0.1.0"
+  random_seed: 42
+  output_dir: "./outputs"
+
+target_discovery:
+  gwas_file: "data/sample/example_gwas.tsv"
+  p_threshold: 5.0e-8
+  suggestive_p_threshold: 1.0e-5
+  window_kb: 500
+  multi_ancestry:
+    enabled: true
+    reference_panels: ["EUR", "AFR", "EAS", "SAS", "AMR"]
+    weights: [0.35, 0.25, 0.15, 0.15, 0.10]
+  xqtl:
+    eqtl_fdr: 0.05
+    pqtl_fdr: 0.05
+    coloc_pp_h4_threshold: 0.80
+
+functional_genomics:
+  crispr:
+    library: "pooled_crispri_human_v2"
+    fdr_threshold: 0.01
+    min_log2fc: -1.0
+  perturbomics:
+    resolution: "amino_acid"
+    pocket_min_druggability_score: 0.70
+
+protein_design:
+  alphafold:
+    model_version: "AlphaFold3"
+    msa_mode: "MMseqs2"
+    num_recycles: 3
+    plddt_cutoff: 70.0
+  bindcraft:
+    target_hotspots: ["ARG120", "GLU154", "TRP210"]
+    binder_length_range: [60, 110]
+    num_designs: 50
+  rfpeptides:
+    cyclic: true
+    peptide_length: 12
+    iterations: 100
+
+repurposing:
+  knowledge_graph:
+    source_db: "CausalPathKG"
+    min_edge_confidence: 0.75
+    max_hops: 2
+  cell_lines: ["K562", "MOLM13", "HEPG2"]
