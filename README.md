@@ -1,18 +1,29 @@
 # AI-Driven Drug Discovery Pipeline: From Genes to Medicines
 
-[![CI Build](https://github.com/alok-108/drug-discovery-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/alok-108/drug-discovery-pipeline/actions/workflows/ci.yml)
-[![Docker Publish](https://github.com/alok-108/drug-discovery-pipeline/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/alok-108/drug-discovery-pipeline/actions/workflows/docker-publish.yml)
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://alok-108-drug-discovery-pipeline.streamlit.app)
-[![Docker Image](https://img.shields.io/badge/Docker-ghcr.io-blue.svg?logo=docker)](https://github.com/alok-108/drug-discovery-pipeline/pkgs/container/drug-discovery-pipeline)
-[![Tests Passing](https://img.shields.io/badge/Tests-30%20passing-brightgreen.svg)](tests/)
-[![Python Version](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue.svg)](https://www.python.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![Tests](https://github.com/alok-108/drug-discovery-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/alok-108/drug-discovery-pipeline/actions)
+[![Docker](https://img.shields.io/badge/docker-ghcr.io-blue?logo=docker)](https://github.com/alok-108/drug-discovery-pipeline/pkgs/container/drug-discovery-pipeline)
+[![Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://alok-108-drug-discovery-pipeline.streamlit.app)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue)](https://www.python.org/downloads/)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 **AI-Driven Drug Discovery Pipeline** ek production-grade open-source framework aur comprehensive guide hai jo computational genetics, multi-ancestry population proteomics, high-resolution functional perturbomics, aur deep generative protein/peptide design ko ek cohesive, end-to-end translational pipeline me integrate karta hai. It bridges the gap between raw genomic variants and approved clinical therapeutics, empowering researchers to systematically turn statistical disease signals into validated, synthesizable molecular medicines using **100% free-tier, open-access tools**.
 
-🌐 **Live Streamlit Dashboard**: [https://alok-108-drug-discovery-pipeline.streamlit.app](https://alok-108-drug-discovery-pipeline.streamlit.app)  
-🐳 **Pre-Built Docker Container**: `ghcr.io/alok-108/drug-discovery-pipeline:latest`
+## 🌐 Live Interactive Demo
+
+Try the interactive pipeline directly in your browser — no installation, 
+no signup, no cost:
+
+👉 **[Launch Streamlit Web App](https://alok-108-drug-discovery-pipeline.streamlit.app)**
+
+### Dashboard Pages
+1. **GWAS Explorer** — Upload summary statistics (or use bundled sample T2D 
+   data), render interactive Plotly Manhattan plots, filter top loci, and 
+   click **"Enrich with Open Targets"** for real-time disease associations.
+2. **Protein Viewer** — Fetch AlphaFold DB 3D structures by UniProt ID 
+   with per-residue pLDDT confidence coloring.
+3. **Drug Repurposing** — Query druggable genes (EGFR, TNF, PPARG) against 
+   Open Targets for clinical phase, mechanism, and modality.
 
 ---
 
