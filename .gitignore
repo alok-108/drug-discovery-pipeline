@@ -73,6 +73,11 @@ data/*.fam
 *.pth
 *.ckpt
 outputs/
+data/real/*
+!data/real/.gitkeep
+*.vcf.gz
+*.tsv.gz
+!data/sample/**/*.tsv
 
 # OS and IDE files
 .DS_Store

@@ -1,0 +1,8 @@
+# Optional Quantum Computing & Chemistry Dependencies (100% Free Tiers)
+# Local AerSimulator requires no account.
+# IBM Quantum free tier provides 1,000 free runtime seconds per month.
+qiskit>=1.0.0
+qiskit-nature>=0.7.0
+qiskit-ibm-runtime>=0.20.0
+scipy>=1.11.0
+matplotlib>=3.8.0
