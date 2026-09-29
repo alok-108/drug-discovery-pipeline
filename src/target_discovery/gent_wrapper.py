@@ -4,7 +4,7 @@ Implements gene-level aggregation from summary statistics using Cauchy
 combination and multi-ancestry meta-analytic burden methods.
 """
 
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
 import numpy as np
 import pandas as pd
 from scipy.stats import cauchy
@@ -26,11 +26,39 @@ class GenTWrapper:
         """
         self.gene_window_kb = gene_window_kb
 
+    # Common canonical Ensembl mappings for top targets
+    GENE_TO_ENSEMBL = {
+        "TCF7L2": "ENSG00000148737",
+        "SLC30A8": "ENSG00000129965",
+        "KCNJ11": "ENSG00000187486",
+        "PPARG": "ENSG00000132170",
+        "GLP1R": "ENSG00000112164",
+        "NTRK1": "ENSG00000198400",
+        "APOE": "ENSG00000130203",
+        "TREM2": "ENSG00000095970",
+        "BIN1": "ENSG00000136717",
+        "FLT3": "ENSG00000122025",
+        "NPM1": "ENSG00000181163",
+        "IDH1": "ENSG00000138413",
+        "DNMT3A": "ENSG00000119772",
+        "ADRB2": "ENSG00000169252",
+        "TNF": "ENSG00000232810",
+        "PTPN22": "ENSG00000134242",
+        "SNCA": "ENSG00000145335",
+        "MTNR1B": "ENSG00000169213",
+        "KCNQ1": "ENSG00000053918",
+        "FTO": "ENSG00000140718",
+        "EGFR": "ENSG00000146648",
+        "BRAF": "ENSG00000157764"
+    }
+
     def aggregate_gene_pvalues(
         self,
         gwas_df: pd.DataFrame,
         gene_col: str = "GENE",
-        p_col: str = "PVALUE"
+        p_col: str = "PVALUE",
+        use_opentargets: bool = False,
+        ot_client: Optional[Any] = None
     ) -> pd.DataFrame:
         """Performs Cauchy combination test (GenT algorithm) per candidate gene.
 
@@ -38,14 +66,16 @@ class GenTWrapper:
             gwas_df: DataFrame containing GWAS summary stats with gene annotations.
             gene_col: Column indicating gene name or symbol.
             p_col: Column containing single-variant p-values.
+            use_opentargets: If True, queries Open Targets to enrich genes with clinical evidence.
+            ot_client: Optional OpenTargetsClient instance.
 
         Returns:
-            pd.DataFrame: Table of genes ranked by combined p-value and FDR q-value.
+            pd.DataFrame: Table of genes ranked by combined p-value, FDR q-value, and optional OT evidence.
         """
         if gene_col not in gwas_df.columns:
             raise KeyError(f"Gene annotation column '{gene_col}' not found in GWAS dataframe.")
 
-        results: List[Dict[str, float]] = []
+        results: List[Dict[str, Any]] = []
 
         for gene, group in gwas_df.groupby(gene_col):
             pvals = group[p_col].dropna().values
@@ -82,7 +112,52 @@ class GenTWrapper:
             (out_df["COMBINED_PVALUE"] * m / out_df["RANK"])[::-1]
         )[::-1]
         out_df["FDR_QVALUE"] = np.clip(out_df["FDR_QVALUE"], 0.0, 1.0)
+
+        if use_opentargets:
+            out_df = self._enrich_opentargets_evidence(out_df, ot_client)
+
         return out_df
+
+    def _enrich_opentargets_evidence(self, df: pd.DataFrame, client: Optional[Any] = None) -> pd.DataFrame:
+        """Enriches ranked genes with Open Targets associations and drug count."""
+        try:
+            from target_discovery.opentargets_client import OpenTargetsClient
+            ot = client or OpenTargetsClient()
+        except Exception:
+            return df
+
+        enriched_df = df.copy()
+        top_diseases = []
+        top_scores = []
+        known_drug_counts = []
+
+        for gene in enriched_df["GENE"]:
+            ensembl_id = self.GENE_TO_ENSEMBL.get(str(gene).upper(), "")
+            if not ensembl_id:
+                top_diseases.append("N/A")
+                top_scores.append(0.0)
+                known_drug_counts.append(0)
+                continue
+
+            try:
+                assocs = ot.get_target_associations(ensembl_id, limit=3)
+                drugs = ot.get_known_drugs(ensembl_id)
+                if assocs:
+                    top_diseases.append(assocs[0].get("disease_name", "Unknown"))
+                    top_scores.append(assocs[0].get("score", 0.0))
+                else:
+                    top_diseases.append("None")
+                    top_scores.append(0.0)
+                known_drug_counts.append(len(drugs))
+            except Exception:
+                top_diseases.append("Error")
+                top_scores.append(0.0)
+                known_drug_counts.append(0)
+
+        enriched_df["OT_TOP_DISEASE"] = top_diseases
+        enriched_df["OT_ASSOCIATION_SCORE"] = top_scores
+        enriched_df["OT_KNOWN_DRUGS"] = known_drug_counts
+        return enriched_df
 
     def run_mugent_multiancestry(
         self,

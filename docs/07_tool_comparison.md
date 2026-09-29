@@ -57,7 +57,8 @@ flowchart TD
 | **Molecular Design** | **AMPGen** | Antimicrobial peptide generation | Host pathogen target constraints | Active amphipathic peptide sequences | MIT | 81% experimental bactericidal hit rate against AMR | Potential in-vivo non-specific hemolytic toxicity |
 | **Drug Repurposing** | **CausalPathKG** | Causal directed knowledge graph mining | Target gene, disease, or drug query | Directed mechanistic paths, confidence scores | GPL-3.0 | Retains sign-consistent causal activation/inhibition | Sparse graph edges in poorly studied rare diseases |
 | **Drug Repurposing** | **Connectivity Map (CMap)** | Inverse transcriptomic signature matching | Differentially expressed gene sets (up/down) | Connectivity tau scores (-100 to +100) | Academic Free | Direct functional phenotypic reversal of disease state | Gene expression changes may reflect secondary consequences |
-| **Drug Repurposing** | **PRISM (Broad)** | Cell viability matching across 4,518 drugs | Cancer cell line panel dependency profiles | Drug sensitivity AUC, IC50 | CC-BY 4.0 | Direct pharmacological screening data in human cells | Predominantly oncology-oriented cell lineages |
+| **Target Discovery** | **Open Targets** | Live clinical and genetic evidence scoring | Ensembl gene ID / Target symbol | Harmonized disease scores & known drugs | Apache-2.0 | 100% Free GraphQL API; aggregates 20+ systematic data sources | Public API rate etiquette recommended (<=10 req/s) |
+| **Emerging Tech** | **Qiskit Nature** | Quantum active-site molecular simulation | Molecular geometry & STO-3G basis | Ground state energy & electronic PES | Apache-2.0 | Exact electronic correlation; zero-cost local CPU & IBM free tier | NISQ physical hardware noise requires error mitigation |
 
 ---
 

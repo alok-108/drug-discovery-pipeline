@@ -1,0 +1,41 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ghcr.io/alok-108/drug-discovery-pipeline:latest
+    container_name: drug-discovery-streamlit
+    ports:
+      - "8501:8501"
+    environment:
+      - STREAMLIT_SERVER_PORT=8501
+      - STREAMLIT_SERVER_ADDRESS=0.0.0.0
+      - PYTHONPATH=/app/src
+    volumes:
+      - pip-cache:/home/appuser/.local
+      - ./data:/app/data
+      - ./outputs:/app/outputs
+    restart: unless-stopped
+
+  jupyter:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: drug-discovery-jupyter
+    command: ["python", "-m", "jupyterlab", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root"]
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./notebooks:/app/notebooks
+      - ./data:/app/data
+      - ./outputs:/app/outputs
+      - pip-cache:/home/appuser/.local
+    environment:
+      - JUPYTER_TOKEN=discovery
+      - PYTHONPATH=/app/src
+    restart: unless-stopped
+
+volumes:
+  pip-cache:
